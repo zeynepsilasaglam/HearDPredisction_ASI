@@ -11,5 +11,8 @@ Heart disease can be predicted based on various symptoms such as age, gender, he
 
 Due to the increasing use of technology and data collection, we can now predict heart disease using machine learning algorithms. Now let’s go further with the task of heart disease prediction using machine learning with Python.
 
+## Links
 
-https://thecleverprogrammer.com/2020/11/10/heart-disease-prediction-using-machine-learning/
+- [`project article`]( https://thecleverprogrammer.com/2020/11/10/heart-disease-prediction-using-machine-learning/)
+
+- [`link to google drive`](https://drive.google.com/drive/folders/1sctdXPMP_8pqs5tQA0iJkqMGF1ALgwc9?usp=sharing)
