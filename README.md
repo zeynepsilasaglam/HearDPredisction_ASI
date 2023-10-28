@@ -15,4 +15,16 @@ Due to the increasing use of technology and data collection, we can now predict 
 
 - [`project article`]( https://thecleverprogrammer.com/2020/11/10/heart-disease-prediction-using-machine-learning/)
 
-- [`link to google drive`](https://drive.google.com/drive/folders/1sctdXPMP_8pqs5tQA0iJkqMGF1ALgwc9?usp=sharing)
+- [`google drive`](https://drive.google.com/drive/folders/1sctdXPMP_8pqs5tQA0iJkqMGF1ALgwc9?usp=sharing)
+
+
+## Project structure
+> Only important files mentoned.
+
+- [`heart_disease.ipynb`](heart_disease.ipynb) -> project itself
+ 
+- [`heart-disease-asi/`](/heart-disease-asi) -> package
+
+    - [`dataset/heart.csv`](/heart-disease-asi/dataset/heart.csv) -> dataset
+    - [`heart_disease.py`](/heart-disease-asi/heart_disease.py) -> converted project to .py file
+    - [`setup.py`](/heart-disease-asi/setup.py) -> setup for package
