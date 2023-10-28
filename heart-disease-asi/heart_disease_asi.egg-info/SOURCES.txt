@@ -1,5 +1,0 @@
-setup.py
-heart_disease_asi.egg-info/PKG-INFO
-heart_disease_asi.egg-info/SOURCES.txt
-heart_disease_asi.egg-info/dependency_links.txt
-heart_disease_asi.egg-info/top_level.txt

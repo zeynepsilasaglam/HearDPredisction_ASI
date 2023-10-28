@@ -1,9 +1,0 @@
-import setuptools
-
-setuptools.setup(
-    name="heart-disease-asi",
-    version="0.0.1",
-    description="Cool package for heart disease prediction.",
-    packages=setuptools.find_packages(),
-    python_requires=">=3.6",
-)
