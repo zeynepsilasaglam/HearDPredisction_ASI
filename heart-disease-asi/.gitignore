@@ -1,2 +1,1 @@
-/setup.py.dvc
-/heart_disease.py.dvc
+*.dvc
