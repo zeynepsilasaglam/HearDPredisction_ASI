@@ -4,6 +4,7 @@ generated using Kedro 0.18.14
 """
 
 import logging
+from symbol import parameters
 from turtle import mode
 from typing import Any, Dict, Tuple
 from xmlrpc.client import Boolean
@@ -17,8 +18,7 @@ from sklearn.naive_bayes import GaussianNB
 
 
 def split_data(
-    data: pd.DataFrame, parameters: Dict[str, Any]
-) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    data: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """Splits data into features and target training and test sets.
 
     Args:
@@ -28,20 +28,20 @@ def split_data(
         Split data.
     """
 
-    data_train = data.sample(
-        frac=parameters["train_fraction"], random_state=parameters["random_state"]
-    )
+    data_train = data.sample(frac=0.7, random_state=42)
     data_test = data.drop(data_train.index)
-
-    X_train = data_train.drop(columns=parameters["target_column"])
-    X_test = data_test.drop(columns=parameters["target_column"])
-    y_train = data_train[parameters["target_column"]]
-    y_test = data_test[parameters["target_column"]]
+    X_train = data_train.drop(columns="target")
+    X_test = data_test.drop(columns="target")
+    y_train = data_train["target"]
+    y_test = data_test["target"]
 
     return X_train, X_test, y_train, y_test
 
 
-def models(X_train: pd.DataFrame, y_train: pd.Series)-> Tuple[Any, Any, Any, Any]:
+def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
+    
+    X_train, X_test, y_train, y_test = split_data(data)
+    
     random_forest = RandomForestClassifier()
     random_forest.fit(X_train, y_train)
     knn = KNeighborsClassifier()
@@ -91,9 +91,10 @@ def report_accuracy(random_forest_predict: pd.Series, knn_predict: pd.Series, lo
     logger.info("Model gaussian has accuracy of %.3f on test data.", accuracy(gaussian_predict, y_test))
 
 
-def predict(model, parameters: Dict[str, Any]) -> int:
-    array = np.array(parameters["test_data"]). reshape(1, 13)
-    df = pd.DataFrame(data=array, columns=parameters["columns"])
+def predict(model, arr: list) :
+    array = np.array(arr). reshape(1, 13)
+    columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+    df = pd.DataFrame(data=array, columns=columns)
     prediction = model.predict(df)
     result = True if prediction[0] == 1 else False
     logger = logging.getLogger(__name__)

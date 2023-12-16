@@ -8,19 +8,18 @@ from kedro.pipeline import Pipeline, node, pipeline
 from .nodes import make_predictions_all_models, report_accuracy, split_data, models, predict
 
 
-
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline(
         [
             node(
                 func=split_data,
-                inputs=["heart_disease_data", "parameters"],
+                inputs=["heart_disease_data"],
                 outputs=["X_train", "X_test", "y_train", "y_test"],
                 name="split",
             ),
             node(
                 func=models,
-                inputs=["X_train", "y_train"],
+                inputs=["heart_disease_data"],
                 outputs=["random_forest", "knn", "logistic_regression", "gaussian"],
                 name="models",
             ),
