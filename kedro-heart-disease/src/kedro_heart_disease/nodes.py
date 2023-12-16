@@ -3,11 +3,13 @@ This is a boilerplate pipeline
 generated using Kedro 0.18.14
 """
 
+from importlib.machinery import ModuleSpec
 import logging
 from symbol import parameters
 from turtle import mode
 from typing import Any, Dict, Tuple
 from xmlrpc.client import Boolean
+
 
 import numpy as np
 import pandas as pd
@@ -16,6 +18,21 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 
+model = RandomForestClassifier()
+
+def check_model(mod: str):
+    if mod == "RandomForestClassifier":
+        model = RandomForestClassifier()
+    elif mod == "LogisticRegression":
+         model = LogisticRegression()
+    elif mod == "KNeighborsClassifier":
+         model = KNeighborsClassifier()
+    elif mod == "GaussianNB":
+         model = GaussianNB()
+
+def get_current_model():
+    return model 
+    
 
 def split_data(
     data: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
@@ -38,22 +55,23 @@ def split_data(
     return X_train, X_test, y_train, y_test
 
 
+
 def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
     
     X_train, X_test, y_train, y_test = split_data(data)
 
     random_forest = RandomForestClassifier()
-    random_forest.fit(X_train, y_train)
     knn = KNeighborsClassifier()
-    knn.fit(X_train, y_train)
     logistic_regression = LogisticRegression(max_iter=1000)
-    logistic_regression.fit(X_train, y_train)
     gaussian = GaussianNB()
+    random_forest.fit(X_train, y_train)
+    knn.fit(X_train, y_train)
+    logistic_regression.fit(X_train, y_train)
     gaussian.fit(X_train, y_train)
     return random_forest, knn, logistic_regression, gaussian
     
 
-def make_predictions_all_models(random_forest, knn, logistic_regression, gaussian, X_test: pd.DataFrame
+def make_predictions_all_models(X_test: pd.DataFrame
 ) -> pd.Series:
     """Uses all models to create predictions.
 
@@ -91,10 +109,12 @@ def report_accuracy(random_forest_predict: pd.Series, knn_predict: pd.Series, lo
     logger.info("Model gaussian has accuracy of %.3f on test data.", accuracy(gaussian_predict, y_test))
 
 
-def predict(model, parameters: Dict[str, Any]) :
+
+def predict(parameters: Dict[str, Any]) :
     array = np.array(parameters["test_data"]). reshape(1, 13)
     columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
     df = pd.DataFrame(data=array, columns=columns)
+    
     prediction = model.predict(df)
     result = True if prediction[0] == 1 else False
     logger = logging.getLogger(__name__)

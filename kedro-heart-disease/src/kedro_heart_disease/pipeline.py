@@ -5,7 +5,9 @@ generated using Kedro 0.18.14
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import make_predictions_all_models, report_accuracy, split_data, models, predict
+from .nodes import make_predictions_all_models, report_accuracy, split_data, models, predict, get_current_model
+
+
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -18,6 +20,12 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="split",
             ),
             node(
+                func=get_current_model,
+                inputs=None,
+                outputs="current_model",
+                name="get_current_model",
+            ),
+            node(
                 func=models,
                 inputs=["heart_disease_data"],
                 outputs=["random_forest", "knn", "logistic_regression", "gaussian"],
@@ -25,7 +33,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=make_predictions_all_models,
-                inputs=["random_forest", "knn", "logistic_regression", "gaussian", "X_test"],
+                inputs=["X_test"],
                 outputs=["random_forest_predict", "knn_predict", "logistic_regression_predict", "gaussian_predict"],
                 name="make_predictions_all_models",
             ),
@@ -37,7 +45,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=predict,
-                inputs=["random_forest", "parameters"],
+                inputs=["parameters"],
                 outputs=None,
                 name="predict",
             ),
