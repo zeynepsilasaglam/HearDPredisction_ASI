@@ -3,4 +3,3 @@ random_state: 42
 target_column: target
 columns: ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
 test_data: [62, 0, 0, 124, 209, 0, 1, 163, 0, 0, 2, 0, 2]
-a: 5
