@@ -1,7 +1,7 @@
 [tool.kedro]
 package_name = "kedro_heart_disease"
 project_name = "kedro-heart-disease"
-kedro_init_version = "0.18.14"
+kedro_init_version = "0.19.1"
 
 [tool.isort]
 profile = "black"

@@ -1,3 +1,8 @@
+[tool.kedro]
+package_name = "kedro_heart_disease"
+project_name = "kedro-heart-disease"
+kedro_init_version = "0.19.1"
+
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
