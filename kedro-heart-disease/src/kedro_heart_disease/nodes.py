@@ -6,10 +6,14 @@ generated using Kedro 0.18.14
 import logging
 from turtle import mode
 from typing import Any, Dict, Tuple
+from xmlrpc.client import Boolean
 
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
 
 
 def split_data(
@@ -37,10 +41,21 @@ def split_data(
     return X_train, X_test, y_train, y_test
 
 
-def make_predictions(
-    X_train: pd.DataFrame, X_test: pd.DataFrame, y_train: pd.Series
+def models(X_train: pd.DataFrame, y_train: pd.Series)-> Tuple[Any, Any, Any, Any]:
+    random_forest = RandomForestClassifier()
+    random_forest.fit(X_train, y_train)
+    knn = KNeighborsClassifier()
+    knn.fit(X_train, y_train)
+    logistic_regression = LogisticRegression(max_iter=1000)
+    logistic_regression.fit(X_train, y_train)
+    gaussian = GaussianNB()
+    gaussian.fit(X_train, y_train)
+    return random_forest, knn, logistic_regression, gaussian
+    
+
+def make_predictions_all_models(random_forest, knn, logistic_regression, gaussian, X_test: pd.DataFrame
 ) -> pd.Series:
-    """Uses Random Forest Clasifyer to create predictions.
+    """Uses all models to create predictions.
 
     Args:
         X_train: Training data of features.
@@ -50,20 +65,36 @@ def make_predictions(
     Returns:
         y_pred: Prediction of the target variable.
     """
-    model = RandomForestClassifier()
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
+    random_forest_predict = random_forest.predict(X_test)
+    knn_predict = knn.predict(X_test)
+    logistic_regression_predict = logistic_regression.predict(X_test)
+    gaussian_predict = gaussian.predict(X_test)
 
-    return y_pred
+    return random_forest_predict, knn_predict, logistic_regression_predict, gaussian_predict
 
 
-def report_accuracy(y_pred: pd.Series, y_test: pd.Series):
+def accuracy(model,  y_test: pd.Series) -> float:
+    return (model == y_test).sum() / len(y_test)
+    
+
+def report_accuracy(random_forest_predict: pd.Series, knn_predict: pd.Series, logistic_regression_predict: pd.Series, gaussian_predict: pd.Series, y_test: pd.Series):
     """Calculates and logs the accuracy.
 
     Args:
         y_pred: Predicted target.
         y_test: True target.
     """
-    accuracy = (y_pred == y_test).sum() / len(y_test)
     logger = logging.getLogger(__name__)
-    logger.info("Model has accuracy of %.3f on test data.", accuracy)
+    logger.info("Model random_forest has accuracy of %.3f on test data.", accuracy(random_forest_predict, y_test))
+    logger.info("Model knn_predict has accuracy of %.3f on test data.", accuracy(knn_predict, y_test))
+    logger.info("Model logistic_regression has accuracy of %.3f on test data.", accuracy(logistic_regression_predict, y_test))
+    logger.info("Model gaussian has accuracy of %.3f on test data.", accuracy(gaussian_predict, y_test))
+
+
+def predict(model, parameters: Dict[str, Any]) -> int:
+    array = np.array(parameters["test_data"]). reshape(1, 13)
+    df = pd.DataFrame(data=array, columns=parameters["columns"])
+    prediction = model.predict(df)
+    result = True if prediction[0] == 1 else False
+    logger = logging.getLogger(__name__)
+    logger.info("Does person have heart disease %s", str(result))
