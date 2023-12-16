@@ -17,58 +17,35 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 
-model = RandomForestClassifier()
+current_model = RandomForestClassifier()
 
-def check_model(mod: str):
-    if mod == "RandomForestClassifier":
-        model = RandomForestClassifier()
-    elif mod == "LogisticRegression":
-         model = LogisticRegression()
-    elif mod == "KNeighborsClassifier":
-         model = KNeighborsClassifier()
-    elif mod == "GaussianNB":
-         model = GaussianNB()
+def check_model(model: str):
+    if model == "RandomForestClassifier":
+        current_model = RandomForestClassifier()
+    elif model == "LogisticRegression":
+         current_model = LogisticRegression()
+    elif model == "KNeighborsClassifier":
+         current_model = KNeighborsClassifier()
+    elif model == "GaussianNB":
+         current_model = GaussianNB()
 
 def get_current_model():
-    return model 
+    return current_model 
     
 
-def split_data(
-    data: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-    """Splits data into features and target training and test sets.
-
-    Args:
-        data: Data containing features and target.
-        parameters: Parameters defined in parameters.yml.
-    Returns:
-        Split data.
-    """
-
+def train(model, data: pd.DataFrame):
     data_train = data.sample(frac=0.7, random_state=42)
     data_test = data.drop(data_train.index)
     X_train = data_train.drop(columns="target")
     X_test = data_test.drop(columns="target")
     y_train = data_train["target"]
     y_test = data_test["target"]
-
-    return X_train, X_test, y_train, y_test
-
-
-
-def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
-    
-    X_train, X_test, y_train, y_test = split_data(data)
-
-    random_forest = RandomForestClassifier()
-    knn = KNeighborsClassifier()
-    logistic_regression = LogisticRegression(max_iter=1000)
-    gaussian = GaussianNB()
-    random_forest.fit(X_train, y_train)
-    knn.fit(X_train, y_train)
-    logistic_regression.fit(X_train, y_train)
-    gaussian.fit(X_train, y_train)
-    return random_forest, knn, logistic_regression, gaussian
+    #X_train, X_test, y_train, y_test = split_data(data)
+    model.fit(X_train, y_train)
+    return model
     
 
 def make_predictions_all_models(X_test: pd.DataFrame
@@ -110,7 +87,7 @@ def report_accuracy(random_forest_predict: pd.Series, knn_predict: pd.Series, lo
 
 
 
-def predict(parameters: Dict[str, Any]) :
+def predict(model, parameters: Dict[str, Any]) :
     array = np.array(parameters["test_data"]). reshape(1, 13)
     columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
     df = pd.DataFrame(data=array, columns=columns)
