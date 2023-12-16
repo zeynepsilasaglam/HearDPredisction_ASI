@@ -41,7 +41,7 @@ def split_data(
 def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
     
     X_train, X_test, y_train, y_test = split_data(data)
-    
+
     random_forest = RandomForestClassifier()
     random_forest.fit(X_train, y_train)
     knn = KNeighborsClassifier()
@@ -91,8 +91,8 @@ def report_accuracy(random_forest_predict: pd.Series, knn_predict: pd.Series, lo
     logger.info("Model gaussian has accuracy of %.3f on test data.", accuracy(gaussian_predict, y_test))
 
 
-def predict(model, arr: list) :
-    array = np.array(arr). reshape(1, 13)
+def predict(model, parameters: Dict[str, Any]) :
+    array = np.array(parameters["test_data"]). reshape(1, 13)
     columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
     df = pd.DataFrame(data=array, columns=columns)
     prediction = model.predict(df)
