@@ -10,6 +10,7 @@ import logging
 from typing import Any, Dict, Tuple
 #from xmlrpc.client import Boolean
 from enum import Enum
+import joblib
 
 
 import numpy as np
@@ -28,27 +29,27 @@ class Models(str, Enum):
     gauss = "GaussianNB"
 
 rand_for_model = RandomForestClassifier()
-log_reg_model = LogisticRegression() 
+log_reg_model = LogisticRegression(max_iter=1000) 
 knn_model = KNeighborsClassifier()
 gauss_model = GaussianNB()
 current_model = rand_for_model
 
 def check_model(model: str):
-    for models in Models:
-        if models.value == model == "RandomForestClassifier":
-            return rand_for_model
-        if models.value == model == "LogisticRegression":
-            return log_reg_model
-        if models.value == model == "KNeighborsClassifier":
-            return knn_model
-        if models.value == model == "GaussianNB":
-            return gauss_model        
+    if model == "RandomForestClassifier":
+        return rand_for_model
+    elif model == "LogisticRegression":
+        return log_reg_model
+    elif model == "KNeighborsClassifier":
+        return knn_model
+    elif model == "GaussianNB":
+        return gauss_model  
+    else:
+        raise ValueError("Unknown algorithm name")      
             
 
 def get_model(model: str):
     current_model = check_model(model)
     return current_model
-
 
 def get_current_model():
     return current_model 
@@ -70,9 +71,27 @@ def train_one(model, data: pd.DataFrame):
     return current_model
 
 
+def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
+
+    X_train, X_test, y_train, y_test = split_data(data)
+    rand_for_model.fit(X_train, y_train)
+    knn_model.fit(X_train, y_train)
+    log_reg_model.fit(X_train, y_train)
+    gauss_model.fit(X_train, y_train)
+    current_model = rand_for_model
+    return rand_for_model, knn_model, log_reg_model, gauss_model, current_model
+
+
 def train(model, data: pd.DataFrame):
     X_train, X_test, y_train, y_test = split_data(data)
-    current_model.fit(X_train, y_train)
+    logger = logging.getLogger(__name__)
+    logger.info("Model random_forest has accuracy of %s", type(model).__name__)
+    current_model = check_model(type(knn_model).__name__ ).fit(X_train, y_train)
+    
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    #model.score(y_pred)
+    current_model = model
     return current_model
     
 

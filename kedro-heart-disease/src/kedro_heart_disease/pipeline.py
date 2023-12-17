@@ -5,7 +5,7 @@ generated using Kedro 0.18.14
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import get_current_model, train, predict, split_data, accuracy
+from .nodes import get_current_model, train, predict, split_data, accuracy, models
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -18,14 +18,14 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="split_data",
             ),
             node(
-                func=get_current_model,
-                inputs=None,
-                outputs="current_model",
-                name="get_current_model",
+                func=models,
+                inputs="heart_disease_data",
+                outputs=["rand_for_model", "knn_model", "log_reg_model", "gauss_model", "current_model"],
+                name="models",
             ),
             node(
                 func=train,
-                inputs=["current_model", "heart_disease_data"],
+                inputs=["gauss_model", "heart_disease_data"],
                 outputs="trained_model",
                 name="train",
             ),
