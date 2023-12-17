@@ -26,24 +26,21 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import f1_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
+from sklearn.metrics import balanced_accuracy_score
 
 class Models(str, Enum):
     rand_for = "RandomForestClassifier",
     knn = "KNeighborsClassifier",
-    log_reg = "LogisticRegression",
     gauss = "GaussianNB"
 
 rand_for_model = RandomForestClassifier()
-log_reg_model = LogisticRegression(max_iter=1000) 
-knn_model = KNeighborsClassifier()
+knn_model = KNeighborsClassifier(n_neighbors=1)
 gauss_model = GaussianNB()
 current_model = rand_for_model
 
 def check_model(model: str):
     if model == "RandomForestClassifier":
         return rand_for_model
-    elif model == "LogisticRegression":
-        return log_reg_model
     elif model == "KNeighborsClassifier":
         return knn_model
     elif model == "GaussianNB":
@@ -71,14 +68,12 @@ def split_data(data: pd.DataFrame):
 
 
 def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
-
     X_train, X_test, y_train, y_test = split_data(data)
     rand_for_model.fit(X_train, y_train)
     knn_model.fit(X_train, y_train)
-    log_reg_model.fit(X_train, y_train)
     gauss_model.fit(X_train, y_train)
     current_model = rand_for_model
-    return rand_for_model, knn_model, log_reg_model, gauss_model, current_model
+    return rand_for_model, knn_model, gauss_model, current_model
 
 
 def model_score(model):
@@ -89,11 +84,11 @@ def model_score(model):
     score = ''
     if type(model).__name__ == "RandomForestClassifier":
         score = f1_score(y_test, y_pred, average='weighted')
-    if type(model).__name__ == "LogisticRegression":
+    if type(model).__name__ == "GaussianNB":
         score = mean_squared_error(y_test, y_pred)
     if type(model).__name__ == "KNeighborsClassifier":
-        score = r2_score(y_test, y_pred)
-    return score
+        score = balanced_accuracy_score(y_test, y_pred)
+    return str(score)
 
 
 def train(model, X_train: pd.DataFrame, y_train: pd.DataFrame):

@@ -4,7 +4,7 @@ from typing import List, Any
 from pydantic import BaseModel
 from enum import Enum
 import pandas as pd
-from src.kedro_heart_disease.nodes import train, predict, check_model
+from src.kedro_heart_disease.nodes import train, predict, check_model, model_score
 import src.kedro_heart_disease.nodes
 import numpy as np
 
@@ -24,7 +24,6 @@ class Output(BaseModel):
 class Models(str, Enum):
     rand_for = "RandomForestClassifier",
     knn = "KNeighborsClassifier",
-    log_reg = "LogisticRegression",
     gauss = "GaussianNB"
 
 
@@ -52,12 +51,13 @@ def predict_(model_name: Annotated[Models, Query()],
 @app.post("/train")
 def train_(model_name: Annotated[Models, Query()],
     input: Annotated[List[int], Body()],
-    expected_output: Annotated[Output, Body()]) -> Any:
+    expected_output: Annotated[Output, Body()]) -> str:
 
     src.kedro_heart_disease.nodes.current_model = check_model(model_name.value)
     df = pd.DataFrame([input])
     eo = pd.DataFrame({"target": [expected_output.target]})
     train(src.kedro_heart_disease.nodes.current_model, df, eo)
-    return "we did training"
+
+    return model_score(src.kedro_heart_disease.nodes.current_model)
 
 

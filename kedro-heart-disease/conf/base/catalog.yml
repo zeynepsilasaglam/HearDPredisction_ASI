@@ -11,9 +11,6 @@ rand_for_model:
 knn_model:
   type: pickle.PickleDataset
   filepath: data/06_models/knn_model.pickle
-log_reg_model:
-  type: pickle.PickleDataset
-  filepath: data/06_models/log_reg_model.pickle
 gauss_model:
   type: pickle.PickleDataset
   filepath: data/06_models/gauss_model.pickle
