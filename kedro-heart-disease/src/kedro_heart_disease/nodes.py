@@ -23,6 +23,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import f1_score
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 
 class Models(str, Enum):
     rand_for = "RandomForestClassifier",
@@ -35,7 +38,6 @@ log_reg_model = LogisticRegression(max_iter=1000)
 knn_model = KNeighborsClassifier()
 gauss_model = GaussianNB()
 current_model = rand_for_model
-score = {}
 
 def check_model(model: str):
     if model == "RandomForestClassifier":
@@ -83,7 +85,14 @@ def model_score(model):
     data = io.load("heart_disease_data")
     X_train, X_test, y_train, y_test = split_data(data)
     y_train = y_train.values
-    score[type(model).__name__] = model.score(X_test, y_test)
+    y_pred = model.predict(X_test)
+    score = ''
+    if type(model).__name__ == "RandomForestClassifier":
+        score = f1_score(y_test, y_pred, average='weighted')
+    if type(model).__name__ == "LogisticRegression":
+        score = mean_squared_error(y_test, y_pred)
+    if type(model).__name__ == "KNeighborsClassifier":
+        score = r2_score(y_test, y_pred)
     return score
 
 

@@ -37,8 +37,8 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=model_score,
-                inputs=["current_model"],
-                outputs="score",
+                inputs="current_model",
+                outputs=None,
                 name="model_score",
             ),
         ]
