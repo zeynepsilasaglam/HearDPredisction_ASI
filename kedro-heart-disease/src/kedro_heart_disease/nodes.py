@@ -10,8 +10,13 @@ import logging
 from typing import Any, Dict, Tuple
 #from xmlrpc.client import Boolean
 from enum import Enum
-import joblib
-
+from kedro_datasets.pandas import CSVDataset
+from kedro.io import DataCatalog
+io = DataCatalog(datasets={
+                  "heart_disease_data": CSVDataset(filepath="data/01_raw/heart.csv")
+                  })
+oi = DataCatalog()
+#io = DataCatalog()
 
 import numpy as np
 import pandas as pd
@@ -33,6 +38,7 @@ log_reg_model = LogisticRegression(max_iter=1000)
 knn_model = KNeighborsClassifier()
 gauss_model = GaussianNB()
 current_model = rand_for_model
+score = {}
 
 def check_model(model: str):
     # model_name = model.value
@@ -76,25 +82,19 @@ def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
     return rand_for_model, knn_model, log_reg_model, gauss_model, current_model
 
 
-def model_score(model, X_train: pd.DataFrame, y_train: pd.DataFrame):
-    logger = logging.getLogger(__name__)
-    logger.info("Model score %.3f ", model.score(X_train, y_train))
-
+def model_score(model):
+    data = io.load("heart_disease_data")
+    X_train, X_test, y_train, y_test = split_data(data)
+    y_train = y_train.values
+    score[type(model).__name__] = model.score(X_test, y_test)
+    return score
 
 
 def train(model, X_train: pd.DataFrame, y_train: pd.DataFrame):
     columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
     X_train.columns = columns
-    print(y_train)
     y_train.columns = ["target"]
     current_model = model.fit(X_train, y_train)
-    score = model_score(current_model, X_train, y_train)
-    #model.fit(X_train, y_train)``
-    #model.fit(X_train, y_train)``
-    #y_pred = model.predict(X_test)
-    #model.score(y_pred)
-    #current_model = model
-    return [score]
     
 
 from sklearn.metrics import classification_report
@@ -107,26 +107,3 @@ def accuracy(model, X_test: pd.DataFrame, y_test: pd.DataFrame):
     logger = logging.getLogger(__name__)
     logger.info("Classification Report: %s", cm)
     
-
-def report_accuracy(random_forest_predict: pd.Series, knn_predict: pd.Series, logistic_regression_predict: pd.Series, gaussian_predict: pd.Series, y_test: pd.Series):
-    """Calculates and logs the accuracy.
-
-    Args:
-        y_pred: Predicted target.
-        y_test: True target.
-    """
-    logger = logging.getLogger(__name__)
-    logger.info("Model random_forest has accuracy of %.3f on test data.", accuracy(random_forest_predict, y_test))
-    logger.info("Model knn_predict has accuracy of %.3f on test data.", accuracy(knn_predict, y_test))
-    logger.info("Model logistic_regression has accuracy of %.3f on test data.", accuracy(logistic_regression_predict, y_test))
-    logger.info("Model gaussian has accuracy of %.3f on test data.", accuracy(gaussian_predict, y_test))
-
-
-
-def predict(model, data: pd.DataFrame) :
-    columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
-    # columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal', 'target']
-    data.columns = columns
-    # X_test = data.drop(columns="target")
-    prediction = model.predict(data)
-    return prediction
