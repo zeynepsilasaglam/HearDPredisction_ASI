@@ -35,6 +35,7 @@ gauss_model = GaussianNB()
 current_model = rand_for_model
 
 def check_model(model: str):
+    # model_name = model.value
     if model == "RandomForestClassifier":
         return rand_for_model
     elif model == "LogisticRegression":
@@ -63,13 +64,6 @@ def split_data(data: pd.DataFrame):
     y_train = data_train["target"]
     y_test = data_test["target"]
     return X_train, X_test, y_train, y_test
-
-
-def train_one(model, data: pd.DataFrame):
-    X_train, X_test, y_train, y_test = split_data(data)
-    current_model.fit(X_train, y_train)
-    return current_model
-
 
 def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
 
@@ -130,10 +124,9 @@ def report_accuracy(random_forest_predict: pd.Series, knn_predict: pd.Series, lo
 
 
 def predict(model, data: pd.DataFrame) :
-    #columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
-    columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal', 'target']
+    columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+    # columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal', 'target']
     data.columns = columns
-    X_test = data.drop(columns="target")
-    prediction = model.predict(X_test)
-    #prediction = model.predict(data)
+    # X_test = data.drop(columns="target")
+    prediction = model.predict(data)
     return prediction

@@ -6,8 +6,20 @@ from enum import Enum
 import pandas as pd
 from src.kedro_heart_disease.nodes import train, predict, check_model
 import src.kedro_heart_disease.nodes
+import numpy as np
 
 app = FastAPI()
+
+#returns list of models 
+@app.get("/models")
+def greet() -> List[str]: 
+    return [model.value for model in Models]
+
+
+class Output(BaseModel):
+    target: int
+
+#takes model name and row. Request body sample: [62, 0, 0, 124, 209, 0, 1, 163, 0, 0, 2, 0, 2]
 
 class Models(str, Enum):
     rand_for = "RandomForestClassifier",
@@ -16,35 +28,36 @@ class Models(str, Enum):
     gauss = "GaussianNB"
 
 
-#returns list of models 
-@app.get("/models")
-def greet() -> List[str]: 
-    return [model.value for model in Models]
-
-class InputEntry(BaseModel): # 
-    value: int
-
-class Output(BaseModel):
-    target: int
-
-#takes model name and row. Request body sample: [62, 0, 0, 124, 209, 0, 1, 163, 0, 0, 2, 0, 2]
 @app.post("/predict")
-def predict(
-    model_name: Annotated[Models, Query()], 
-    input: Annotated[List[int], Body()]) -> Any:
+def predict_(model_name: Annotated[Models, Query()],
+    input: Annotated[List[int], Body()]) -> str:
+    src.kedro_heart_disease.nodes.current_model = check_model(model_name.value)
 
-    return 0
+    inp = pd.DataFrame([input])
+    result = predict(src.kedro_heart_disease.nodes.current_model, inp)
+    format_result = np.array2string(result, separator=' ')[1:-1]
+    return f"Predicted: {format_result}"
 
+'''
+{
+  "input": [
+    62, 0, 0, 124, 209, 0, 1, 163, 0, 0, 2, 0, 2
+  ],
+  "expected_output": {
+    "target": 1
+  }
+}
+'''
 
 @app.post("/train")
 def train_(model_name: Annotated[Models, Query()],
     input: Annotated[List[int], Body()],
     expected_output: Annotated[Output, Body()]) -> Any:
-    src.kedro_heart_disease.nodes.check_model = check_model(model_name.value)
+
+    src.kedro_heart_disease.nodes.current_model = check_model(model_name.value)
     df = pd.DataFrame([input])
     eo = pd.DataFrame({"target": [expected_output.target]})
-    print(eo)
-    train(src.kedro_heart_disease.nodes.check_model, df, eo)
+    train(src.kedro_heart_disease.nodes.current_model, df, eo)
     return "we did training"
 
 
