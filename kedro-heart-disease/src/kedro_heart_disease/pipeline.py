@@ -20,7 +20,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=models,
                 inputs="heart_disease_data",
-                outputs=["rand_for_model", "knn_model", "log_reg_model", "gauss_model", "current_model"],
+                outputs=["rand_for_model", "knn_model", "gauss_model", "current_model"],
                 name="models",
             ),
             node(
