@@ -5,10 +5,7 @@ generated using Kedro 0.18.14
 
 from importlib.machinery import ModuleSpec
 import logging
-#from symbol import parameters
-#from turtle import mode
 from typing import Any, Dict, Tuple
-#from xmlrpc.client import Boolean
 from enum import Enum
 from kedro_datasets.pandas import CSVDataset
 from kedro.io import DataCatalog
@@ -26,6 +23,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
 
 class Models(str, Enum):
     rand_for = "RandomForestClassifier",
@@ -41,7 +40,6 @@ current_model = rand_for_model
 score = {}
 
 def check_model(model: str):
-    # model_name = model.value
     if model == "RandomForestClassifier":
         return rand_for_model
     elif model == "LogisticRegression":
@@ -71,6 +69,7 @@ def split_data(data: pd.DataFrame):
     y_test = data_test["target"]
     return X_train, X_test, y_train, y_test
 
+
 def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
 
     X_train, X_test, y_train, y_test = split_data(data)
@@ -83,6 +82,8 @@ def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
 
 
 def model_score(model):
+    dr = oi.load("heart_disease_data")
+    print(dr)
     data = io.load("heart_disease_data")
     X_train, X_test, y_train, y_test = split_data(data)
     y_train = y_train.values
@@ -97,13 +98,8 @@ def train(model, X_train: pd.DataFrame, y_train: pd.DataFrame):
     current_model = model.fit(X_train, y_train)
     
 
-from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix
-
-def accuracy(model, X_test: pd.DataFrame, y_test: pd.DataFrame):
-    y_pred = model.predict(X_test)
-    report = classification_report(y_test, y_pred)
-    cm = confusion_matrix(y_test, y_pred)
-    logger = logging.getLogger(__name__)
-    logger.info("Classification Report: %s", cm)
-    
+def predict(model, data: pd.DataFrame) :
+    columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+    data.columns = columns
+    prediction = model.predict(data)
+    return prediction
