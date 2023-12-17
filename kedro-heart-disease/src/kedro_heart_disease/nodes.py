@@ -87,11 +87,10 @@ def train(model, data: pd.DataFrame):
     logger = logging.getLogger(__name__)
     logger.info("Model random_forest has accuracy of %s", type(model).__name__)
     current_model = check_model(type(knn_model).__name__ ).fit(X_train, y_train)
-    
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
+    #model.fit(X_train, y_train)
+    #y_pred = model.predict(X_test)
     #model.score(y_pred)
-    current_model = model
+    #current_model = model
     return current_model
     
 
