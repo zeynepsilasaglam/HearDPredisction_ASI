@@ -28,3 +28,7 @@ Due to the increasing use of technology and data collection, we can now predict 
     - [`dataset/heart.csv`](/heart-disease-asi/dataset/heart.csv) -> dataset
     - [`heart_disease.py`](/heart-disease-asi/heart_disease.py) -> converted project to .py file
     - [`setup.py`](/heart-disease-asi/setup.py) -> setup for package
+
+- [`kedro`](/kedro-heart-disease)
+
+    - [`fastApi app`](/kedro-heart-disease/main.py) -> endpoints
