@@ -19,7 +19,7 @@ Due to the increasing use of technology and data collection, we can now predict 
 
 
 ## Project structure
-> Only important files mentoned.
+> Only important files mentioned.
 
 - [`heart_disease.ipynb`](heart_disease.ipynb) -> project itself
  
