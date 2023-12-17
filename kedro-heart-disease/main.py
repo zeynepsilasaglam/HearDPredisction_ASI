@@ -25,8 +25,7 @@ class InputEntry(BaseModel): #
     value: int
 
 class Output(BaseModel):
-    name: str
-    value: int
+    target: int
 
 #takes model name and row. Request body sample: [62, 0, 0, 124, 209, 0, 1, 163, 0, 0, 2, 0, 2]
 @app.post("/predict")
@@ -38,13 +37,14 @@ def predict(
 
 
 @app.post("/train")
-def train(model_name: Annotated[Models, Query()],
+def train_(model_name: Annotated[Models, Query()],
     input: Annotated[List[int], Body()],
     expected_output: Annotated[Output, Body()]) -> Any:
     src.kedro_heart_disease.nodes.check_model = check_model(model_name.value)
-
-    df = pd.DataFrame({"input": [input], "expected_output": [expected_output]})
-    train(src.kedro_heart_disease.nodes.check_model, df)
+    df = pd.DataFrame([input])
+    eo = pd.DataFrame({"target": [expected_output.target]})
+    print(eo)
+    train(src.kedro_heart_disease.nodes.check_model, df, eo)
     return "we did training"
 
 

@@ -88,11 +88,12 @@ def model_score(model, X_train: pd.DataFrame, y_train: pd.DataFrame):
 
 
 
-def train(model, X_train: pd.DataFrame, y_train):
+def train(model, X_train: pd.DataFrame, y_train: pd.DataFrame):
     columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
     X_train.columns = columns
+    print(y_train)
     y_train.columns = ["target"]
-    current_model = check_model(type(knn_model).__name__ ).fit(X_train, y_train)
+    current_model = model.fit(X_train, y_train)
     score = model_score(current_model, X_train, y_train)
     #model.fit(X_train, y_train)``
     #model.fit(X_train, y_train)``
