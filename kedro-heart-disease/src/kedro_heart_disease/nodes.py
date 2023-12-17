@@ -82,16 +82,24 @@ def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
     return rand_for_model, knn_model, log_reg_model, gauss_model, current_model
 
 
-def train(model, data: pd.DataFrame):
-    X_train, X_test, y_train, y_test = split_data(data)
+def model_score(model, X_train: pd.DataFrame, y_train: pd.DataFrame):
     logger = logging.getLogger(__name__)
-    logger.info("Model random_forest has accuracy of %s", type(model).__name__)
+    logger.info("Model score %.3f ", model.score(X_train, y_train))
+
+
+
+def train(model, X_train: pd.DataFrame, y_train):
+    columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+    X_train.columns = columns
+    y_train.columns = ["target"]
     current_model = check_model(type(knn_model).__name__ ).fit(X_train, y_train)
-    #model.fit(X_train, y_train)
+    score = model_score(current_model, X_train, y_train)
+    #model.fit(X_train, y_train)``
+    #model.fit(X_train, y_train)``
     #y_pred = model.predict(X_test)
     #model.score(y_pred)
     #current_model = model
-    return current_model
+    return [score]
     
 
 from sklearn.metrics import classification_report
@@ -120,10 +128,11 @@ def report_accuracy(random_forest_predict: pd.Series, knn_predict: pd.Series, lo
 
 
 
-def predict(model, parameters: Dict[str, Any]) :
-    array = np.array(parameters["test_data"]). reshape(1, 13)
-    columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
-    df = pd.DataFrame(data=array, columns=columns)
-
-    prediction = model.predict(df)
-    return prediction[0]
+def predict(model, data: pd.DataFrame) :
+    #columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+    columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal', 'target']
+    data.columns = columns
+    X_test = data.drop(columns="target")
+    prediction = model.predict(X_test)
+    #prediction = model.predict(data)
+    return prediction
