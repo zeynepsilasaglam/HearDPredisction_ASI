@@ -12,8 +12,6 @@ from kedro.io import DataCatalog
 io = DataCatalog(datasets={
                   "heart_disease_data": CSVDataset(filepath="data/01_raw/heart.csv")
                   })
-oi = DataCatalog()
-#io = DataCatalog()
 
 import numpy as np
 import pandas as pd
@@ -82,8 +80,6 @@ def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
 
 
 def model_score(model):
-    dr = oi.load("heart_disease_data")
-    print(dr)
     data = io.load("heart_disease_data")
     X_train, X_test, y_train, y_test = split_data(data)
     y_train = y_train.values
