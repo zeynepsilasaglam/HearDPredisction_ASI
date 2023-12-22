@@ -20,6 +20,6 @@ def register_pipelines() -> dict[str, Pipeline]:
     #pipelines["__default__"] = sum(pipelines.values())
     return {
         "__default__": khd_pipeline,
-        "phd_pipeline": phd_pipeline,
+        "phd": phd_pipeline,
         "all": sum(pipelines.values())
     }
