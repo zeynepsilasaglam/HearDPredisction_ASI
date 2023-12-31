@@ -15,6 +15,7 @@ io = DataCatalog(datasets={
 
 import numpy as np
 import pandas as pd
+import optuna
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -55,7 +56,7 @@ def get_model(model: str):
 
 def get_current_model():
     return current_model 
-    
+
 
 def split_data(data: pd.DataFrame):
     data_train = data.sample(frac=0.7, random_state=42)
@@ -65,6 +66,43 @@ def split_data(data: pd.DataFrame):
     y_train = data_train["target"]
     y_test = data_test["target"]
     return X_train, X_test, y_train, y_test
+
+
+def optimize_(data: pd.DataFrame):
+    X_train, X_test, y_train, y_test = split_data(data)
+
+    def objective_rf(trial: optuna.Trial):
+        n_estim = trial.suggest_int("n_estimators", 10, 100)
+        max_depth = trial.suggest_int("max_depth", 2, 32)
+        rand_for_model.set_params(n_estimators=n_estim, max_depth=max_depth)
+        rand_for_model.fit(X_train, y_train)
+        return model_score(rand_for_model)
+    
+    def objective_knn(trial: optuna.Trial):
+        n_neighbors = trial.suggest_int('n_neighbors', 1, 10)
+        weights = trial.suggest_categorical('weights', ['uniform', 'distance'])
+        knn_model.set_params(n_neighbors=n_neighbors, weights=weights)
+        knn_model.fit(X_train, y_train)
+        return model_score(knn_model)
+
+    study_rf = optuna.create_study(
+        study_name="random-forest",
+        direction = optuna.study.StudyDirection.MAXIMIZE
+    )
+
+    study_knn = optuna.create_study(
+        study_name="knn",
+        direction = optuna.study.StudyDirection.MAXIMIZE
+    )
+
+    study_rf.optimize(func=objective_rf, n_trials=100, show_progress_bar=True)
+    rand_for_model.set_params(**study_rf.best_params)
+
+    study_knn.optimize(func=objective_knn, n_trials=100, show_progress_bar=True)
+    knn_model.set_params(**study_knn.best_params)
+
+    print("weights for rf: ", study_rf.best_params)
+    print("weights for knn: ", study_knn.best_params)
 
 
 def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
@@ -88,7 +126,7 @@ def model_score(model):
         score = mean_squared_error(y_test, y_pred)
     if type(model).__name__ == "KNeighborsClassifier":
         score = balanced_accuracy_score(y_test, y_pred)
-    return str(score)
+    return score
 
 
 def train(model, X_train: pd.DataFrame, y_train: pd.DataFrame):

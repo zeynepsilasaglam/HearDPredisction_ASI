@@ -4,8 +4,7 @@ from typing import List, Any
 from pydantic import BaseModel
 from enum import Enum
 import pandas as pd
-from src.kedro_heart_disease.nodes import train, predict, check_model, model_score
-import src.kedro_heart_disease.nodes
+from src.kedro_heart_disease.pipelines.kedro_heart_disease.nodes import train, predict, check_model, model_score, current_model
 import numpy as np
 
 app = FastAPI()
@@ -30,10 +29,10 @@ class Models(str, Enum):
 @app.post("/predict")
 def predict_(model_name: Annotated[Models, Query()],
     input: Annotated[List[int], Body()]) -> str:
-    src.kedro_heart_disease.nodes.current_model = check_model(model_name.value)
+    current_model = check_model(model_name.value)
 
     inp = pd.DataFrame([input])
-    result = predict(src.kedro_heart_disease.nodes.current_model, inp)
+    result = predict(current_model, inp)
     format_result = np.array2string(result, separator=' ')[1:-1]
     return f"Predicted: {format_result}"
 
@@ -53,11 +52,11 @@ def train_(model_name: Annotated[Models, Query()],
     input: Annotated[List[int], Body()],
     expected_output: Annotated[Output, Body()]) -> str:
 
-    src.kedro_heart_disease.nodes.current_model = check_model(model_name.value)
+    current_model = check_model(model_name.value)
     df = pd.DataFrame([input])
     eo = pd.DataFrame({"target": [expected_output.target]})
-    train(src.kedro_heart_disease.nodes.current_model, df, eo)
+    train(current_model, df, eo)
 
-    return model_score(src.kedro_heart_disease.nodes.current_model)
+    return str(model_score(current_model))
 
 
