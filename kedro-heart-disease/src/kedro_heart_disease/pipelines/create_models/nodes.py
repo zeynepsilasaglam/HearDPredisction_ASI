@@ -16,7 +16,7 @@ import optuna
 
 
 rf_model = RandomForestClassifier()
-knn_model = KNeighborsClassifier()
+knn_model = KNeighborsClassifier(n_neighbors=1)
 gnb_model = GaussianNB()
 
 def optimize_(data: pd.DataFrame):
@@ -67,16 +67,16 @@ def fit_(data: pd.DataFrame):
     X_train, X_test, y_train, y_test = split_data(data)
 
     rf_model.fit(X_train, y_train)
-    model = PickleDataSet(filepath="data/06_models/rf_model.pkl")
-    model.save(rf_model)
+    #model = PickleDataSet(filepath="data/06_models/rf_model.pkl")
+    #model.save(rf_model)
 
     knn_model.fit(X_train, y_train)
-    model = PickleDataSet(filepath="data/06_models/knn_model.pkl")
-    model.save(knn_model)
+    #model = PickleDataSet(filepath="data/06_models/knn_model.pkl")
+    #model.save(knn_model)
 
     gnb_model.fit(X_train, y_train)
-    model = PickleDataSet(filepath="data/06_models/gnb_model.pkl")
-    model.save(gnb_model)
+    #model = PickleDataSet(filepath="data/06_models/gnb_model.pkl")
+    #model.save(gnb_model)
 
 
 

@@ -66,7 +66,10 @@ def model_score(model):
     print(X_test.values)
     print(X_test.values.shape)
     logging.warning(' i am about to predict')
-    y_pred = model.predict(X_test.values)
+    columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+    X_test.columns = columns
+    y_pred = model.predict(X_test)
+    print(X_test)
     score = ''
     if type(model).__name__ == ModelNames.RANDOM_FOREST.value:
         score = f1_score(y_test, y_pred, average='weighted')
