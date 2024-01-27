@@ -24,7 +24,7 @@ class ModelNames(Enum):
     RANDOM_FOREST = "RandomForestClassifier"
     GAUSSIAN_NB = "GaussianNB"
 
-
+#comm
 rf_model = PickleDataSet(filepath="data/06_models/rf_model.pkl").load()
 knn_model = PickleDataSet(filepath="data/06_models/knn_model.pkl").load()
 gnb_model = PickleDataSet(filepath="data/06_models/gnb_model.pkl").load()
