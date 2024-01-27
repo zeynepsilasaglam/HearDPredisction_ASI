@@ -19,12 +19,13 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import balanced_accuracy_score
 from enum import Enum
 
-class ModelNames(Enum):
-    KNN_CLASSIFIER = "KNeighborsClassifier"
-    RANDOM_FOREST = "RandomForestClassifier"
-    GAUSSIAN_NB = "GaussianNB"
+import logging
 
-#comm
+class ModelNames(Enum):
+    GAUSSIAN_NB = "GaussianNB"
+    RANDOM_FOREST = "RandomForestClassifier"
+    KNN_CLASSIFIER = "KNeighborsClassifier"
+
 rf_model = PickleDataSet(filepath="data/06_models/rf_model.pkl").load()
 knn_model = PickleDataSet(filepath="data/06_models/knn_model.pkl").load()
 gnb_model = PickleDataSet(filepath="data/06_models/gnb_model.pkl").load()
@@ -48,7 +49,6 @@ def get_model(model: str):
 def get_current_model():
     return current_model 
 
-
 def split_data(data: pd.DataFrame):
     data_train = data.sample(frac=0.7, random_state=42)
     data_test = data.drop(data_train.index)
@@ -60,9 +60,13 @@ def split_data(data: pd.DataFrame):
 
 def model_score(model):
     data = io.load("heart_disease_data")
+    logging.warning('data was loaded')
     X_train, X_test, y_train, y_test = split_data(data)
     y_train = y_train.values
-    y_pred = model.predict(X_test)
+    print(X_test.values)
+    print(X_test.values.shape)
+    logging.warning(' i am about to predict')
+    y_pred = model.predict(X_test.values)
     score = ''
     if type(model).__name__ == ModelNames.RANDOM_FOREST.value:
         score = f1_score(y_test, y_pred, average='weighted')

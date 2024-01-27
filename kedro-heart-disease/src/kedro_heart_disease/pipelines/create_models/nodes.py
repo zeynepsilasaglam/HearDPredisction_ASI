@@ -56,6 +56,9 @@ def optimize_(data: pd.DataFrame):
     print("params for rf: ", study_rf.best_params)
     print("params for knn: ", study_knn.best_params)
 
+    knn_model.predict(X_test)
+    print(model_score(knn_model))
+
     return rf_model, knn_model, gnb_model
 
 
