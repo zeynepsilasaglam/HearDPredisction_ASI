@@ -24,18 +24,18 @@ import logging
 class ModelNames(Enum):
     GAUSSIAN_NB = "GaussianNB"
     RANDOM_FOREST = "RandomForestClassifier"
-    KNN_CLASSIFIER = "KNeighborsClassifier"
+    LR_MODEL = "LogisticRegression"
 
 rf_model = PickleDataSet(filepath="data/06_models/rf_model.pkl").load()
-knn_model = PickleDataSet(filepath="data/06_models/knn_model.pkl").load()
 gnb_model = PickleDataSet(filepath="data/06_models/gnb_model.pkl").load()
+lr_model = PickleDataSet(filepath="data/06_models/lr_model.pkl").load()
 current_model = rf_model
 
 def check_model(model_name: str):
     try:
         return {
             ModelNames.RANDOM_FOREST: rf_model,
-            ModelNames.KNN_CLASSIFIER: knn_model,
+            ModelNames.LR_MODEL: lr_model,
             ModelNames.GAUSSIAN_NB: gnb_model,
         }[ModelNames(model_name)]
     except ValueError:
@@ -75,7 +75,7 @@ def model_score(model):
         score = f1_score(y_test, y_pred, average='weighted')
     if type(model).__name__ == ModelNames.GAUSSIAN_NB.value:
         score = mean_squared_error(y_test, y_pred)
-    if type(model).__name__ == ModelNames.KNN_CLASSIFIER.value:
+    if type(model).__name__ == ModelNames.LR_MODEL.value:
         score = balanced_accuracy_score(y_test, y_pred)
     return score
 

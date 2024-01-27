@@ -9,6 +9,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from kedro_datasets.pickle import PickleDataSet
+from sklearn.linear_model import LogisticRegression
 
 from kedro_heart_disease.pipelines.kedro_heart_disease.nodes import model_score, split_data
 
@@ -16,8 +17,9 @@ import optuna
 
 
 rf_model = RandomForestClassifier()
-knn_model = KNeighborsClassifier(n_neighbors=1)
+knn_model = KNeighborsClassifier()
 gnb_model = GaussianNB()
+lr_model = LogisticRegression()
 
 def optimize_(data: pd.DataFrame):
     X_train, X_test, y_train, y_test = split_data(data)
@@ -67,16 +69,21 @@ def fit_(data: pd.DataFrame):
     X_train, X_test, y_train, y_test = split_data(data)
 
     rf_model.fit(X_train, y_train)
-    #model = PickleDataSet(filepath="data/06_models/rf_model.pkl")
-    #model.save(rf_model)
+    model = PickleDataSet(filepath="data/06_models/rf_model.pkl")
+    model.save(rf_model)
 
     knn_model.fit(X_train, y_train)
-    #model = PickleDataSet(filepath="data/06_models/knn_model.pkl")
-    #model.save(knn_model)
+    model = PickleDataSet(filepath="data/06_models/knn_model.pkl")
+    model.save(knn_model)
 
     gnb_model.fit(X_train, y_train)
-    #model = PickleDataSet(filepath="data/06_models/gnb_model.pkl")
-    #model.save(gnb_model)
+    model = PickleDataSet(filepath="data/06_models/gnb_model.pkl")
+    model.save(gnb_model)
+
+    lr_model.fit(X_train, y_train)
+    model = PickleDataSet(filepath="data/06_models/lr_model.pkl")
+    model.save(lr_model)
+    
 
 
 
