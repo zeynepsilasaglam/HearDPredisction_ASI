@@ -21,6 +21,7 @@ gnb_model = GaussianNB()
 
 def optimize_(data: pd.DataFrame):
     X_train, X_test, y_train, y_test = split_data(data)
+    print("Shape",X_train.shape[0])
 
     def objective_rf(trial: optuna.Trial):
         n_estim = trial.suggest_int("n_estimators", 10, 100)

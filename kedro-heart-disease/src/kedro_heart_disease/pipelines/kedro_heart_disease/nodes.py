@@ -17,7 +17,12 @@ import pandas as pd
 from sklearn.metrics import f1_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import balanced_accuracy_score
-from src.kedro_heart_disease.pipelines.model_names import ModelNames
+from enum import Enum
+
+class ModelNames(Enum):
+    KNN_CLASSIFIER = "KNeighborsClassifier"
+    RANDOM_FOREST = "RandomForestClassifier"
+    GAUSSIAN_NB = "GaussianNB"
 
 
 rf_model = PickleDataSet(filepath="data/06_models/rf_model.pkl").load()
@@ -59,11 +64,11 @@ def model_score(model):
     y_train = y_train.values
     y_pred = model.predict(X_test)
     score = ''
-    if type(model).__name__ == "RandomForestClassifier":
+    if type(model).__name__ == ModelNames.RANDOM_FOREST.value:
         score = f1_score(y_test, y_pred, average='weighted')
-    if type(model).__name__ == "GaussianNB":
+    if type(model).__name__ == ModelNames.GAUSSIAN_NB.value:
         score = mean_squared_error(y_test, y_pred)
-    if type(model).__name__ == "KNeighborsClassifier":
+    if type(model).__name__ == ModelNames.KNN_CLASSIFIER.value:
         score = balanced_accuracy_score(y_test, y_pred)
     return score
 
