@@ -8,9 +8,6 @@ heart_disease_data:
 rf_model:
   type: pickle.PickleDataset
   filepath: data/06_models/rf_model.pkl
-knn_model:
-  type: pickle.PickleDataset
-  filepath: data/06_models/knn_model.pkl
 gnb_model:
   type: pickle.PickleDataset
   filepath: data/06_models/gnb_model.pkl

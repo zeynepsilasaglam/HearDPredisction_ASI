@@ -4,10 +4,8 @@ generated using Kedro 0.19.1
 """
 from typing import Any, Dict, Tuple
 import pandas as pd
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 from kedro_datasets.pickle import PickleDataSet
 from sklearn.linear_model import LogisticRegression
 
@@ -17,7 +15,6 @@ import optuna
 
 
 rf_model = RandomForestClassifier()
-knn_model = KNeighborsClassifier()
 gnb_model = GaussianNB()
 lr_model = LogisticRegression()
 
@@ -32,36 +29,35 @@ def optimize_(data: pd.DataFrame):
         rf_model.fit(X_train, y_train)
         return model_score(rf_model)
     
-    def objective_knn(trial: optuna.Trial):
-        n_neighbors = trial.suggest_int('n_neighbors', 1, 10)
-        weights = trial.suggest_categorical('weights', ['uniform', 'distance'])
-        knn_model.set_params(n_neighbors=n_neighbors, weights=weights)
-        knn_model.fit(X_train, y_train)
-        return model_score(knn_model)
+    def objective_lr(trial: optuna.Trial):
+        C = trial.suggest_loguniform('C', 1e-5, 1e5)
+        max_iter = trial.suggest_int('max_iter', 100, 1000)
+        lr_model.set_params(C=C, max_iter=max_iter)
+        lr_model.fit(X_train, y_train)
+        return model_score(lr_model)
 
     study_rf = optuna.create_study(
         study_name="random-forest",
         direction = optuna.study.StudyDirection.MAXIMIZE
     )
 
-    study_knn = optuna.create_study(
-        study_name="knn",
+    study_lr = optuna.create_study(
+        study_name="log reg",
         direction = optuna.study.StudyDirection.MAXIMIZE
     )
 
     study_rf.optimize(func=objective_rf, n_trials=100, show_progress_bar=True)
     rf_model.set_params(**study_rf.best_params)
 
-    study_knn.optimize(func=objective_knn, n_trials=100, show_progress_bar=True)
-    knn_model.set_params(**study_knn.best_params)
+    study_lr.optimize(func=objective_lr, n_trials=100, show_progress_bar=True)
+    lr_model.set_params(**study_lr.best_params)
 
     print("params for rf: ", study_rf.best_params)
-    print("params for knn: ", study_knn.best_params)
+    print("params for lr: ", study_lr.best_params)
 
-    knn_model.predict(X_test)
-    print(model_score(knn_model))
+    print(lr_model.get_params())
 
-    return rf_model, knn_model, gnb_model
+    return rf_model, lr_model, gnb_model
 
 
 
@@ -71,10 +67,6 @@ def fit_(data: pd.DataFrame):
     rf_model.fit(X_train, y_train)
     model = PickleDataSet(filepath="data/06_models/rf_model.pkl")
     model.save(rf_model)
-
-    knn_model.fit(X_train, y_train)
-    model = PickleDataSet(filepath="data/06_models/knn_model.pkl")
-    model.save(knn_model)
 
     gnb_model.fit(X_train, y_train)
     model = PickleDataSet(filepath="data/06_models/gnb_model.pkl")

@@ -16,7 +16,7 @@ io = DataCatalog(datasets={
 import pandas as pd
 from sklearn.metrics import f1_score
 from sklearn.metrics import mean_squared_error
-from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import log_loss
 from enum import Enum
 
 import logging
@@ -76,7 +76,7 @@ def model_score(model):
     if type(model).__name__ == ModelNames.GAUSSIAN_NB.value:
         score = mean_squared_error(y_test, y_pred)
     if type(model).__name__ == ModelNames.LR_MODEL.value:
-        score = balanced_accuracy_score(y_test, y_pred)
+        score = log_loss(y_test, y_pred)
     return score
 
 
