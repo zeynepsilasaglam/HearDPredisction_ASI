@@ -6,7 +6,6 @@ generated using Kedro 0.18.14
 from importlib.machinery import ModuleSpec
 import logging
 from typing import Any, Dict, Tuple
-from enum import Enum
 from kedro_datasets.pickle import PickleDataSet
 from kedro_datasets.pandas import CSVDataset
 from kedro.io import DataCatalog
@@ -14,11 +13,8 @@ io = DataCatalog(datasets={
                   "heart_disease_data": CSVDataset(filepath="data/01_raw/heart.csv")
                   })
 
-import numpy as np
 import pandas as pd
 import optuna
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
@@ -101,18 +97,6 @@ def optimize_(data: pd.DataFrame):
 
     print("weights for rf: ", study_rf.best_params)
     print("weights for knn: ", study_knn.best_params)
-
-
-def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
-    X_train, X_test, y_train, y_test = split_data(data)
-    rand_for_model = RandomForestClassifier()
-    rand_for_model.fit(X_train, y_train)
-    knn_model = KNeighborsClassifier(n_neighbors=1)
-    knn_model.fit(X_train, y_train)
-    gauss_model = GaussianNB()
-    gauss_model.fit(X_train, y_train)
-    current_model = rand_for_model
-    return rand_for_model, knn_model, gauss_model, current_model
 
 
 def model_score(model):

@@ -5,7 +5,7 @@ generated using Kedro 0.18.14
 
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import train, predict, split_data, models, model_score, optimize_
+from .nodes import train, predict, split_data, model_score, optimize_
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -22,12 +22,6 @@ def create_pipeline(**kwargs) -> Pipeline:
                 inputs="heart_disease_data",
                 outputs=None,
                 name="optimize_",
-            ),
-            node(
-                func=models,
-                inputs="heart_disease_data",
-                outputs=["rand_for_model", "knn_model", "gauss_model", "current_model"],
-                name="models",
             ),
             node(
                 func=train,
