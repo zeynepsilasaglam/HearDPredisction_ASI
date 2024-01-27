@@ -7,6 +7,7 @@ from importlib.machinery import ModuleSpec
 import logging
 from typing import Any, Dict, Tuple
 from enum import Enum
+from kedro_datasets.pickle import PickleDataSet
 from kedro_datasets.pandas import CSVDataset
 from kedro.io import DataCatalog
 io = DataCatalog(datasets={
@@ -29,23 +30,18 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 from sklearn.metrics import balanced_accuracy_score
 
-class Models(str, Enum):
-    rand_for = "RandomForestClassifier",
-    knn = "KNeighborsClassifier",
-    gauss = "GaussianNB"
+#rand_for_model = PickleDataSet(filepath="data/06_models/rand_for_model.pkl").load()
+#knn_model = PickleDataSet(filepath="data/06_models/knn_model.pkl").load()
+#gauss_model = PickleDataSet(filepath="data/06_models/gauss_model.pkl").load()
+#current_model = rand_for_model
 
-rand_for_model = RandomForestClassifier()
-knn_model = KNeighborsClassifier(n_neighbors=1)
-gauss_model = GaussianNB()
-current_model = rand_for_model
-
-def check_model(model: str):
-    if model == "RandomForestClassifier":
-        return rand_for_model
-    elif model == "KNeighborsClassifier":
-        return knn_model
-    elif model == "GaussianNB":
-        return gauss_model  
+def check_model(model_name: str):
+    if model_name == "RandomForestClassifier":
+        return PickleDataSet(filepath="data/06_models/rand_for_model.pkl").load()
+    elif model_name == "KNeighborsClassifier":
+        return PickleDataSet(filepath="data/06_models/knn_model.pkl").load()
+    elif model_name == "GaussianNB":
+        return PickleDataSet(filepath="data/06_models/gauss_model.pkl").load()
     else:
         raise ValueError("Unknown algorithm name")      
             
@@ -74,6 +70,7 @@ def optimize_(data: pd.DataFrame):
     def objective_rf(trial: optuna.Trial):
         n_estim = trial.suggest_int("n_estimators", 10, 100)
         max_depth = trial.suggest_int("max_depth", 2, 32)
+        rand_for_model = RandomForestClassifier()
         rand_for_model.set_params(n_estimators=n_estim, max_depth=max_depth)
         rand_for_model.fit(X_train, y_train)
         return model_score(rand_for_model)
@@ -81,6 +78,7 @@ def optimize_(data: pd.DataFrame):
     def objective_knn(trial: optuna.Trial):
         n_neighbors = trial.suggest_int('n_neighbors', 1, 10)
         weights = trial.suggest_categorical('weights', ['uniform', 'distance'])
+        knn_model = KNeighborsClassifier()
         knn_model.set_params(n_neighbors=n_neighbors, weights=weights)
         knn_model.fit(X_train, y_train)
         return model_score(knn_model)
@@ -107,8 +105,11 @@ def optimize_(data: pd.DataFrame):
 
 def models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
     X_train, X_test, y_train, y_test = split_data(data)
+    rand_for_model = RandomForestClassifier()
     rand_for_model.fit(X_train, y_train)
+    knn_model = KNeighborsClassifier(n_neighbors=1)
     knn_model.fit(X_train, y_train)
+    gauss_model = GaussianNB()
     gauss_model.fit(X_train, y_train)
     current_model = rand_for_model
     return rand_for_model, knn_model, gauss_model, current_model
