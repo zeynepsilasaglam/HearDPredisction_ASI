@@ -1,18 +1,19 @@
-from fastapi import FastAPI, Query, Body, Depends
+from fastapi import FastAPI, Query, Body
 from typing_extensions import Annotated# typing_ext for python <= 3.9 
 from typing import List, Any
 from pydantic import BaseModel
 from enum import Enum
 import pandas as pd
-from src.kedro_heart_disease.pipelines.kedro_heart_disease.nodes import train, predict, check_model, model_score, current_model
+from src.kedro_heart_disease.pipelines.kedro_heart_disease.nodes import train, predict, check_model, model_score
 import numpy as np
+from src.kedro_heart_disease.pipelines.model_names import ModelNames
 
 app = FastAPI()
 
 #returns list of models 
 @app.get("/models")
 def greet() -> List[str]: 
-    return [model.value for model in Models]
+    return [model.value for model in ModelNames]
 
 
 class Output(BaseModel):
@@ -20,14 +21,14 @@ class Output(BaseModel):
 
 #takes model name and row. Request body sample: [62, 0, 0, 124, 209, 0, 1, 163, 0, 0, 2, 0, 2]
 
-class Models(str, Enum):
-    rand_for = "RandomForestClassifier",
-    knn = "KNeighborsClassifier",
-    gauss = "GaussianNB"
+# class Models(str, Enum):
+#     rand_for = "RandomForestClassifier",
+#     knn = "KNeighborsClassifier",
+#     gauss = "GaussianNB"
 
 
 @app.post("/predict")
-def predict_(model_name: Annotated[Models, Query()],
+def predict_(model_name: Annotated[ModelNames, Query()],
     input: Annotated[List[int], Body()]) -> str:
     current_model = check_model(model_name.value)
 
@@ -48,7 +49,7 @@ def predict_(model_name: Annotated[Models, Query()],
 '''
 
 @app.post("/train")
-def train_(model_name: Annotated[Models, Query()],
+def train_(model_name: Annotated[ModelNames, Query()],
     input: Annotated[List[int], Body()],
     expected_output: Annotated[Output, Body()]) -> str:
 

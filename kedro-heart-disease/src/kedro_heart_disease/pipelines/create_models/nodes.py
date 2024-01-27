@@ -10,33 +10,70 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from kedro_datasets.pickle import PickleDataSet
 
+from kedro_heart_disease.pipelines.kedro_heart_disease.nodes import model_score, split_data
 
-def split_data(data: pd.DataFrame):
-    data_train = data.sample(frac=0.7, random_state=42)
-    data_test = data.drop(data_train.index)
-    X_train = data_train.drop(columns="target")
-    X_test = data_test.drop(columns="target")
-    y_train = data_train["target"]
-    y_test = data_test["target"]
-    return X_train, X_test, y_train, y_test
+import optuna
 
-def create_models(data: pd.DataFrame)-> Tuple[Any, Any, Any, Any]:
+
+rf_model = RandomForestClassifier()
+knn_model = KNeighborsClassifier()
+gnb_model = GaussianNB()
+
+def optimize_(data: pd.DataFrame):
     X_train, X_test, y_train, y_test = split_data(data)
 
-    rand_for_model = RandomForestClassifier()
-    rand_for_model.fit(X_train, y_train)
-    model = PickleDataSet(filepath="data/06_models/rand_for_model.pkl")
-    model.save(rand_for_model)
+    def objective_rf(trial: optuna.Trial):
+        n_estim = trial.suggest_int("n_estimators", 10, 100)
+        max_depth = trial.suggest_int("max_depth", 2, 32)
+        rf_model.set_params(n_estimators=n_estim, max_depth=max_depth)
+        rf_model.fit(X_train, y_train)
+        return model_score(rf_model)
+    
+    def objective_knn(trial: optuna.Trial):
+        n_neighbors = trial.suggest_int('n_neighbors', 1, 10)
+        weights = trial.suggest_categorical('weights', ['uniform', 'distance'])
+        knn_model.set_params(n_neighbors=n_neighbors, weights=weights)
+        knn_model.fit(X_train, y_train)
+        return model_score(knn_model)
 
-    knn_model = KNeighborsClassifier(n_neighbors=1)
+    study_rf = optuna.create_study(
+        study_name="random-forest",
+        direction = optuna.study.StudyDirection.MAXIMIZE
+    )
+
+    study_knn = optuna.create_study(
+        study_name="knn",
+        direction = optuna.study.StudyDirection.MAXIMIZE
+    )
+
+    study_rf.optimize(func=objective_rf, n_trials=100, show_progress_bar=True)
+    rf_model.set_params(**study_rf.best_params)
+
+    study_knn.optimize(func=objective_knn, n_trials=100, show_progress_bar=True)
+    knn_model.set_params(**study_knn.best_params)
+
+    print("params for rf: ", study_rf.best_params)
+    print("params for knn: ", study_knn.best_params)
+
+    return rf_model, knn_model, gnb_model
+
+
+
+def fit_(data: pd.DataFrame):
+    X_train, X_test, y_train, y_test = split_data(data)
+
+    rf_model.fit(X_train, y_train)
+    model = PickleDataSet(filepath="data/06_models/rf_model.pkl")
+    model.save(rf_model)
+
     knn_model.fit(X_train, y_train)
     model = PickleDataSet(filepath="data/06_models/knn_model.pkl")
     model.save(knn_model)
-    
-    gauss_model = GaussianNB()
-    gauss_model.fit(X_train, y_train)
-    model = PickleDataSet(filepath="data/06_models/gauss_model.pkl")
-    model.save(gauss_model)
 
-    current_model = rand_for_model
-    return rand_for_model, knn_model, gauss_model, current_model
+    gnb_model.fit(X_train, y_train)
+    model = PickleDataSet(filepath="data/06_models/gnb_model.pkl")
+    model.save(gnb_model)
+
+
+
+

@@ -5,7 +5,7 @@ generated using Kedro 0.18.14
 
 from importlib.machinery import ModuleSpec
 import logging
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 from kedro_datasets.pickle import PickleDataSet
 from kedro_datasets.pandas import CSVDataset
 from kedro.io import DataCatalog
@@ -14,32 +14,26 @@ io = DataCatalog(datasets={
                   })
 
 import pandas as pd
-import optuna
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix
 from sklearn.metrics import f1_score
 from sklearn.metrics import mean_squared_error
-from sklearn.metrics import r2_score
 from sklearn.metrics import balanced_accuracy_score
+from src.kedro_heart_disease.pipelines.model_names import ModelNames
 
-#rand_for_model = PickleDataSet(filepath="data/06_models/rand_for_model.pkl").load()
-#knn_model = PickleDataSet(filepath="data/06_models/knn_model.pkl").load()
-#gauss_model = PickleDataSet(filepath="data/06_models/gauss_model.pkl").load()
-#current_model = rand_for_model
+
+rf_model = PickleDataSet(filepath="data/06_models/rf_model.pkl").load()
+knn_model = PickleDataSet(filepath="data/06_models/knn_model.pkl").load()
+gnb_model = PickleDataSet(filepath="data/06_models/gnb_model.pkl").load()
+current_model = rf_model
 
 def check_model(model_name: str):
-    if model_name == "RandomForestClassifier":
-        return PickleDataSet(filepath="data/06_models/rand_for_model.pkl").load()
-    elif model_name == "KNeighborsClassifier":
-        return PickleDataSet(filepath="data/06_models/knn_model.pkl").load()
-    elif model_name == "GaussianNB":
-        return PickleDataSet(filepath="data/06_models/gauss_model.pkl").load()
-    else:
-        raise ValueError("Unknown algorithm name")      
+    try:
+        return {
+            ModelNames.RANDOM_FOREST: rf_model,
+            ModelNames.KNN_CLASSIFIER: knn_model,
+            ModelNames.GAUSSIAN_NB: gnb_model,
+        }[ModelNames(model_name)]
+    except ValueError:
+        raise ValueError("Unknown algorithm name")     
             
 
 def get_model(model: str):
@@ -58,46 +52,6 @@ def split_data(data: pd.DataFrame):
     y_train = data_train["target"]
     y_test = data_test["target"]
     return X_train, X_test, y_train, y_test
-
-
-def optimize_(data: pd.DataFrame):
-    X_train, X_test, y_train, y_test = split_data(data)
-
-    def objective_rf(trial: optuna.Trial):
-        n_estim = trial.suggest_int("n_estimators", 10, 100)
-        max_depth = trial.suggest_int("max_depth", 2, 32)
-        rand_for_model = RandomForestClassifier()
-        rand_for_model.set_params(n_estimators=n_estim, max_depth=max_depth)
-        rand_for_model.fit(X_train, y_train)
-        return model_score(rand_for_model)
-    
-    def objective_knn(trial: optuna.Trial):
-        n_neighbors = trial.suggest_int('n_neighbors', 1, 10)
-        weights = trial.suggest_categorical('weights', ['uniform', 'distance'])
-        knn_model = KNeighborsClassifier()
-        knn_model.set_params(n_neighbors=n_neighbors, weights=weights)
-        knn_model.fit(X_train, y_train)
-        return model_score(knn_model)
-
-    study_rf = optuna.create_study(
-        study_name="random-forest",
-        direction = optuna.study.StudyDirection.MAXIMIZE
-    )
-
-    study_knn = optuna.create_study(
-        study_name="knn",
-        direction = optuna.study.StudyDirection.MAXIMIZE
-    )
-
-    study_rf.optimize(func=objective_rf, n_trials=100, show_progress_bar=True)
-    rand_for_model.set_params(**study_rf.best_params)
-
-    study_knn.optimize(func=objective_knn, n_trials=100, show_progress_bar=True)
-    knn_model.set_params(**study_knn.best_params)
-
-    print("weights for rf: ", study_rf.best_params)
-    print("weights for knn: ", study_knn.best_params)
-
 
 def model_score(model):
     data = io.load("heart_disease_data")

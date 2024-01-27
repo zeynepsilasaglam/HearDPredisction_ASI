@@ -5,12 +5,12 @@
 heart_disease_data:
   type: pandas.CSVDataset
   filepath: data/01_raw/heart.csv
-rand_for_model:
+rf_model:
   type: pickle.PickleDataset
-  filepath: data/06_models/rand_for_model.pkl
+  filepath: data/06_models/rf_model.pkl
 knn_model:
   type: pickle.PickleDataset
   filepath: data/06_models/knn_model.pkl
-gauss_model:
+gnb_model:
   type: pickle.PickleDataset
-  filepath: data/06_models/gauss_model.pkl
+  filepath: data/06_models/gnb_model.pkl
