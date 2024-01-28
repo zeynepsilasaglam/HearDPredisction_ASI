@@ -17,6 +17,7 @@ import pandas as pd
 from sklearn.metrics import f1_score, mean_squared_error
 from enum import Enum
 import os
+import numpy as np
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from kedro_datasets.pickle import PickleDataSet
@@ -99,6 +100,7 @@ def train(model, X_train: pd.DataFrame, y_train: pd.DataFrame):
     X_train.columns = columns
     y_train.columns = ["target"]
     current_model = model.fit(X_train, y_train)
+    return current_model
     
 
 def predict(model, data: pd.DataFrame) :
