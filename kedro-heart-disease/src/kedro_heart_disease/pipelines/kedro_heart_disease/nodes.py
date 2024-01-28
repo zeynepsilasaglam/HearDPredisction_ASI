@@ -102,7 +102,7 @@ def train(model, X_train: pd.DataFrame, y_train: pd.DataFrame):
     
 
 def predict(model, data: pd.DataFrame) :
-    logging.warning(gnb_model.get_params)
+    #logging.warning(gnb_model.get_params)
     columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
     data.columns = columns
     prediction = model.predict(data)
