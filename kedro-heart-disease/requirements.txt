@@ -21,9 +21,10 @@ kedro-datasets==1.8.0
 kedro-viz==6.7.0
 kedro-datasets[pandas.CSVDataset]~=1.0
 numpy==1.24.4
+optuna==3.5.0
 omegaconf==2.3.0
 packaging==23.2
-pandas==2.0.3
+pandas==1.5.3
 pycaret==3.2.0
 pytest-cov~=3.0
 pytest-mock>=1.7.1, <2.0

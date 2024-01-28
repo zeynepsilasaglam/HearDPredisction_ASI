@@ -9,5 +9,5 @@ COPY main.py /app/
 
 COPY . /app/
 
-ENTRYPOINT ["uvicorn", "--host", "0.0.0.0"]
-CMD ["main:app"]
+# CMD ["kedro", "run", "-p", "cm", "&", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "kedro run -p cm && uvicorn main:app --host 0.0.0.0 --port 8000"]

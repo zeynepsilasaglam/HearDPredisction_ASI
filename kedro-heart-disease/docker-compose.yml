@@ -1,5 +1,9 @@
 version: '3'
 
 services:
-  fast-api-app:
+  fastapi-app-kedro:
+    build: .
     image: asi-pr:beta
+    ports:
+      - 8080:8000
+

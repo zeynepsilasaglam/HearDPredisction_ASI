@@ -37,11 +37,11 @@ gnb_model = GaussianNB()
 dt_model = DecisionTreeClassifier()
 
 if os.path.exists(rf_model_file):
-    rf_model = PickleDataSet(filepath="data/06_models/rf_model.pkl").load()
+    rf_model = PickleDataSet(filepath=rf_model_file).load()
 if os.path.exists(gnb_model_file):
-    gnb_model = PickleDataSet(filepath="data/06_models/gnb_model.pkl").load()
+    gnb_model = PickleDataSet(filepath=gnb_model_file).load()
 if os.path.exists(dt_model_file):
-    dt_model = PickleDataSet(filepath="data/06_models/dt_model.pkl").load()
+    dt_model = PickleDataSet(filepath=dt_model_file).load()
 current_model = rf_model
 
 
@@ -102,6 +102,7 @@ def train(model, X_train: pd.DataFrame, y_train: pd.DataFrame):
     
 
 def predict(model, data: pd.DataFrame) :
+    logging.warning(gnb_model.get_params)
     columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
     data.columns = columns
     prediction = model.predict(data)
