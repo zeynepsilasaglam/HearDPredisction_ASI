@@ -19,19 +19,19 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=train,
-                inputs=["knn_model", "X_train", "y_train"],
+                inputs=["dt_model", "X_train", "y_train"],
                 outputs=None,
                 name="train",
             ),
             node(
                 func=predict,
-                inputs=["knn_model", "X_test"],
+                inputs=["dt_model", "X_test"],
                 outputs="prediction",
                 name="predict",
             ),
             node(
                 func=model_score,
-                inputs="knn_model",
+                inputs="dt_model",
                 outputs=None,
                 name="model_score",
             ),

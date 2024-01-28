@@ -14,3 +14,9 @@ gnb_model:
 lr_model:
   type: pickle.PickleDataset
   filepath: data/06_models/lr_model.pkl
+svm_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/svm_model.pkl
+dt_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/dt_model.pkl

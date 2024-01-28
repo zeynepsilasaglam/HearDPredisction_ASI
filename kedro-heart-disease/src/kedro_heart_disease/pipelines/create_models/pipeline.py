@@ -12,7 +12,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=optimize_,
                 inputs="heart_disease_data",
-                outputs=["rf_model", "knn_model", "gnb_model"],
+                outputs=["rf_model", "gnb_model", "dt_model"],
                 name="optimize",
             ),
             node(
