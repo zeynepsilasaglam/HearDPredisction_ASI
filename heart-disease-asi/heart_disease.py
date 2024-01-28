@@ -1,14 +1,14 @@
-# # #Predicting heart disease
-# # Using [Heart Disease Dataset from Kaggle](https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset)
+# #Predicting heart disease
+# Using [Heart Disease Dataset from Kaggle](https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset)
 
-# # Model choises
-# # We'll use different classification algorithms and comparing the result.
-# # * Logistic Regression
-# # * k-Nearest Neighbors
-# # * Random Forest
-# # * Decision Trees
-# # * Naive Bayes
-# # * Gradient Boosting
+# Model choises
+# We'll use different classification algorithms and comparing the result.
+# * Logistic Regression
+# * k-Nearest Neighbors
+# * Random Forest
+# * Decision Trees
+# * Naive Bayes
+# * Gradient Boosting
 
 # importing libraries
 import pandas as pd
@@ -204,9 +204,6 @@ def lr_fit_and_score():
   lr_fit()
   print(rs_log_reg.score(X_test, y_test))
 
-
-# Setup random seed
-np.random.seed(42)
 
 # Setup random hyperparameter search for RandomForestClassifier
 rs_rf = RandomizedSearchCV(RandomForestClassifier(),

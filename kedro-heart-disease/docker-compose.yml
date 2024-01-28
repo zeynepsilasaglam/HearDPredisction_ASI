@@ -1,0 +1,5 @@
+version: '3'
+
+services:
+  fast-api-app:
+    image: asi-pr:beta

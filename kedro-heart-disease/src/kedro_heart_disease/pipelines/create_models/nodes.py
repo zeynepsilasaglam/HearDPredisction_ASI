@@ -2,12 +2,11 @@
 This is a boilerplate pipeline 'create_models'
 generated using Kedro 0.19.1
 """
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 import pandas as pd
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from kedro_datasets.pickle import PickleDataSet
-from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 
 from kedro_heart_disease.pipelines.kedro_heart_disease.nodes import model_score, split_data
