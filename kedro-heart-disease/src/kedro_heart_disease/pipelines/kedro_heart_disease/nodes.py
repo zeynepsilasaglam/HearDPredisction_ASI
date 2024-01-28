@@ -16,7 +16,11 @@ io = DataCatalog(datasets={
 import pandas as pd
 from sklearn.metrics import f1_score, mean_squared_error
 from enum import Enum
-
+import os
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
+from kedro_datasets.pickle import PickleDataSet
+from sklearn.tree import DecisionTreeClassifier
 import logging
 
 class ModelNames(Enum):
@@ -24,10 +28,22 @@ class ModelNames(Enum):
     RANDOM_FOREST = "RandomForestClassifier"
     DT_MODEL = "DecisionTreeClassifier"
 
-rf_model = PickleDataSet(filepath="data/06_models/rf_model.pkl").load()
-gnb_model = PickleDataSet(filepath="data/06_models/gnb_model.pkl").load()
-dt_model = PickleDataSet(filepath="data/06_models/dt_model.pkl").load()
+rf_model_file = "data/06_models/rf_model.pkl"
+gnb_model_file = "data/06_models/gnb_model.pkl"
+dt_model_file = "data/06_models/dt_model.pkl"
+
+rf_model = RandomForestClassifier()
+gnb_model = GaussianNB()
+dt_model = DecisionTreeClassifier()
+
+if os.path.exists(rf_model_file):
+    rf_model = PickleDataSet(filepath="data/06_models/rf_model.pkl").load()
+if os.path.exists(gnb_model_file):
+    gnb_model = PickleDataSet(filepath="data/06_models/gnb_model.pkl").load()
+if os.path.exists(dt_model_file):
+    dt_model = PickleDataSet(filepath="data/06_models/dt_model.pkl").load()
 current_model = rf_model
+
 
 def check_model(model_name: str):
     try:
