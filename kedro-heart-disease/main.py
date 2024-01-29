@@ -23,6 +23,7 @@ class Output(BaseModel):
 @app.post("/predict")
 def predict_(model_name: Annotated[ModelNames, Query()],
     input: Annotated[List[int], Body()]) -> str:
+    
     current_model = check_model(model_name.value)
 
     inp = pd.DataFrame([input])

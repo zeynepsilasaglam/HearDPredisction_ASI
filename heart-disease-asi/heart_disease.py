@@ -57,8 +57,8 @@ count_gender = read_data.sex.value_counts()
 
 def boxplot_age():
   plt.figure(figsize=(12, 10))
-  plt.xlabel("age",fontsize=18)
-  plt.ylabel("Agagee",fontsize=18)
+  plt.xlabel("Disease",fontsize=18)
+  plt.ylabel("Age",fontsize=18)
   sns.boxplot(x='target',y='age',data=read_data,palette='winter')
   plt.show()
 
