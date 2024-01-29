@@ -5,7 +5,7 @@ WORKDIR /app/
 COPY requirements.txt /build/
 RUN pip install --no-cache-dir -r /build/requirements.txt
 
-COPY main.py /app/
+# COPY main.py /app/
 
 COPY . /app/
 

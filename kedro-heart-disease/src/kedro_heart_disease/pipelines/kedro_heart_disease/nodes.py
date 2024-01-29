@@ -33,16 +33,20 @@ rf_model_file = "data/06_models/rf_model.pkl"
 gnb_model_file = "data/06_models/gnb_model.pkl"
 dt_model_file = "data/06_models/dt_model.pkl"
 
-rf_model = RandomForestClassifier()
-gnb_model = GaussianNB()
-dt_model = DecisionTreeClassifier()
+# rf_model = RandomForestClassifier()
+# gnb_model = GaussianNB()
+# dt_model = DecisionTreeClassifier()
+
+rf_model_pkl = PickleDataSet(filepath=rf_model_file) 
+gnb_model_pkl = PickleDataSet(filepath=gnb_model_file)
+dt_mode_pkl = PickleDataSet(filepath=dt_model_file)
 
 if os.path.exists(rf_model_file):
-    rf_model = PickleDataSet(filepath=rf_model_file).load()
+    rf_model = rf_model_pkl.load()
 if os.path.exists(gnb_model_file):
-    gnb_model = PickleDataSet(filepath=gnb_model_file).load()
+    gnb_model = gnb_model_pkl.load()
 if os.path.exists(dt_model_file):
-    dt_model = PickleDataSet(filepath=dt_model_file).load()
+    dt_model = dt_mode_pkl.load()
 current_model = rf_model
 
 
@@ -75,12 +79,8 @@ def split_data(data: pd.DataFrame):
 
 def model_score(model):
     data = io.load("heart_disease_data")
-    #logging.warning('data was loaded')
     X_train, X_test, y_train, y_test = split_data(data)
     y_train = y_train.values
-    #print(X_test.values)
-    #print(X_test.values.shape)
-    #logging.warning(' i am about to predict')
     columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
     X_test.columns = columns
     y_pred = model.predict(X_test)
@@ -100,11 +100,20 @@ def train(model, X_train: pd.DataFrame, y_train: pd.DataFrame):
     X_train.columns = columns
     y_train.columns = ["target"]
     current_model = model.fit(X_train, y_train)
+    
+    if type(model).__name__ == ModelNames.RANDOM_FOREST.value:
+        rf_model_pkl.save(model)
+    if type(model).__name__ == ModelNames.GAUSSIAN_NB.value:
+        gnb_model_pkl.save(model)
+    if type(model).__name__ == ModelNames.DT_MODEL.value:
+        dt_mode_pkl.save(model)
+
+    print(rf_model.get_params())
     return current_model
     
 
 def predict(model, data: pd.DataFrame) :
-    #logging.warning(gnb_model.get_params)
+    logging.warning(rf_model.get_params)
     columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
     data.columns = columns
     prediction = model.predict(data)
