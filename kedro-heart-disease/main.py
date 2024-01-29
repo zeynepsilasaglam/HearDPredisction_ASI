@@ -4,7 +4,7 @@ from typing import List, Any
 from pydantic import BaseModel
 from enum import Enum
 import pandas as pd
-from src.kedro_heart_disease.pipelines.kedro_heart_disease.nodes import train, predict, check_model, model_score, ModelNames
+from src.kedro_heart_disease.pipelines.kedro_heart_disease.nodes import train, predict, model_score, ModelNames, check_model
 import numpy as np
 
 app = FastAPI()

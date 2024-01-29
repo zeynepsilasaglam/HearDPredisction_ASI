@@ -47,7 +47,6 @@ if os.path.exists(gnb_model_file):
     gnb_model = gnb_model_pkl.load()
 if os.path.exists(dt_model_file):
     dt_model = dt_mode_pkl.load()
-current_model = rf_model
 
 
 def check_model(model_name: str):
@@ -60,13 +59,6 @@ def check_model(model_name: str):
     except ValueError:
         raise ValueError("Unknown algorithm name")     
             
-
-def get_model(model: str):
-    current_model = check_model(model)
-    return current_model
-
-def get_current_model():
-    return current_model 
 
 def split_data(data: pd.DataFrame):
     data_train = data.sample(frac=0.7, random_state=42)
@@ -92,6 +84,7 @@ def model_score(model):
         score = mean_squared_error(y_test, y_pred)
     if type(model).__name__ == ModelNames.DT_MODEL.value:
         score = f1_score(y_test, y_pred)
+
     return score
 
 
@@ -108,7 +101,7 @@ def train(model, X_train: pd.DataFrame, y_train: pd.DataFrame):
     if type(model).__name__ == ModelNames.DT_MODEL.value:
         dt_mode_pkl.save(model)
 
-    print(rf_model.get_params())
+
     return current_model
     
 
